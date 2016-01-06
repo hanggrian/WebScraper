@@ -18,6 +18,11 @@ public class MainActivity extends AppCompatActivity {
                 .setUserAgent(UserAgent.MOBILE)
                 .load("http://www.smule.com/recording/charlie-puth-marvin-gaye/401669803_166079920", new WebSnatch.Completion() {
                     @Override
+                    public void onProgress(int progress) {
+
+                    }
+
+                    @Override
                     public void onSuccess(String html) {
                         for (int i = 0; i < html.split("\n").length; i++)
                             Log.w(String.valueOf(i), html.split("\n")[i]);

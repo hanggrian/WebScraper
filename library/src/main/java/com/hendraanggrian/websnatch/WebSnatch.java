@@ -1,22 +1,25 @@
 package com.hendraanggrian.websnatch;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * Created by hendraanggrian on 06/01/16.
+ * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public class WebSnatch extends WebView {
 
     private final String NAME = "HTMLOUT";
     private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
+
+    private Handler timer;
 
     public WebSnatch(Context context) {
         super(context);
@@ -27,12 +30,24 @@ public class WebSnatch extends WebView {
         return this;
     }
 
+    public WebSnatch setTimeout(int timeout) {
+        timer = new Handler();
+        timer.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                throw new TimeoutException();
+            }
+        }, timeout);
+        return this;
+    }
+
     public void load(String url, final Completion completion) {
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {
                 try {
-                    URLConnection conn = new URL(params[0]).openConnection();
+                    URL url = new URL(params[0]);
+                    URLConnection conn = url.openConnection();
                     conn.getHeaderFields();
                     return conn.getURL().toString();
                 } catch (Exception exc) {
@@ -42,37 +57,42 @@ public class WebSnatch extends WebView {
             }
 
             @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
+            protected void onPostExecute(String result) {
+                if (result.isEmpty())
+                    return;
+
+                WebViewClient webViewClient = new WebViewClient() {
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        super.onPageStarted(view, url, favicon);
+                    }
+
+                    @Override
+                    public void onLoadResource(WebView view, String url) {
+                        super.onLoadResource(view, url);
+                        completion.onProgress(view.getProgress());
+                    }
+
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        view.loadUrl(PROCESS_URL);
+                    }
+                };
+                SnatchInterface snatchInterface = new SnatchInterface() {
+                    @Override
+                    @JavascriptInterface
+                    public void processHTML(String html) {
+                        completion.onSuccess(html);
+                    }
+                };
+
+                getSettings().setJavaScriptEnabled(true);
+                addJavascriptInterface(snatchInterface, NAME);
+                setWebViewClient(webViewClient);
+                loadUrl(result);
             }
         }.execute(url);
-
-        try {
-            getSettings().setJavaScriptEnabled(true);
-            addJavascriptInterface(new SnatchInterface() {
-                @Override
-                @JavascriptInterface
-                public void processHTML(String html) {
-                    completion.onSuccess(html);
-                }
-            }, NAME);
-            setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    super.onPageFinished(view, url);
-                    view.loadUrl(PROCESS_URL);
-                }
-            });
-            loadUrl(getLongUrl(url));
-        } catch (Exception exc) {
-            completion.onError(exc);
-        }
-    }
-
-    public String getLongUrl(String url) throws IOException {
-        URLConnection conn = new URL(url).openConnection();
-        conn.getHeaderFields();
-        return conn.getURL().toString();
     }
 
     public interface SnatchInterface {
@@ -81,6 +101,8 @@ public class WebSnatch extends WebView {
     }
 
     public interface Completion {
+        void onProgress(int progress);
+
         void onSuccess(String html);
 
         void onError(Exception exc);

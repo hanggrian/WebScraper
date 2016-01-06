@@ -1,7 +1,7 @@
 package com.hendraanggrian.websnatch;
 
 /**
- * Created by hendraanggrian on 06/01/16.
+ * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public class UserAgent {
 
