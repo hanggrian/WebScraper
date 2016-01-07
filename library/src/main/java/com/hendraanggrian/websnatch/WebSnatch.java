@@ -19,6 +19,7 @@ public class WebSnatch extends WebView {
     private final String NAME = "HTMLOUT";
     private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
 
+    private AsyncTask<String, Void, String> loadTask;
     private int timeout = -1;
 
     public WebSnatch(Context context) {
@@ -36,24 +37,39 @@ public class WebSnatch extends WebView {
     }
 
     public void load(String url, final Completion completion) {
-        new AsyncTask<String, Void, String>() {
+        loadTask = new AsyncTask<String, Void, String>() {
+            Exception exception;
+
+            @Override
+            protected void onPreExecute() {
+                completion.onStarted(WebSnatch.this);
+            }
+
             @Override
             protected String doInBackground(String... params) {
                 try {
                     URL url = new URL(params[0]);
                     URLConnection conn = url.openConnection();
                     conn.getHeaderFields();
-                    return conn.getURL().toString();
+                    String longUrl = conn.getURL().toString();
+
+                    if (!isCancelled())
+                        return longUrl;
+                    else
+                        return "";
                 } catch (Exception exc) {
-                    completion.onError(exc);
+                    exception = exc;
                     return "";
                 }
             }
 
             @Override
             protected void onPostExecute(String result) {
-                if (result.isEmpty())
+                if (result.isEmpty()) {
+                    if (exception != null)
+                        completion.onError(WebSnatch.this, exception);
                     return;
+                }
 
                 WebViewClient webViewClient = new WebViewClient() {
                     @Override
@@ -64,7 +80,7 @@ public class WebSnatch extends WebView {
                                 @Override
                                 public void run() {
                                     view.stopLoading();
-                                    completion.onError(new TimeoutException("Loading webpage timeout at " + timeout + "ms"));
+                                    completion.onError(WebSnatch.this, new TimeoutException("Loading webpage timeout at " + timeout + "ms"));
                                 }
                             }, timeout);
                     }
@@ -72,7 +88,7 @@ public class WebSnatch extends WebView {
                     @Override
                     public void onLoadResource(WebView view, String url) {
                         super.onLoadResource(view, url);
-                        completion.onProgress(view.getProgress());
+                        completion.onProgress(WebSnatch.this, view.getProgress());
                     }
 
                     @Override
@@ -85,7 +101,7 @@ public class WebSnatch extends WebView {
                     @Override
                     @JavascriptInterface
                     public void processHTML(String html) {
-                        completion.onSuccess(html);
+                        completion.onSuccess(WebSnatch.this, html);
                     }
                 };
 
@@ -97,16 +113,43 @@ public class WebSnatch extends WebView {
         }.execute(url);
     }
 
+    public void stop() {
+        loadTask.cancel(true);
+        getSettings().setJavaScriptEnabled(false);
+        setWebViewClient(null);
+        stopLoading();
+    }
+
     public interface SnatchInterface {
         @JavascriptInterface
         void processHTML(String html);
     }
 
     public interface Completion {
-        void onProgress(int progress);
+        void onStarted(WebSnatch webSnatch);
 
-        void onSuccess(String html);
+        void onProgress(WebSnatch webSnatch, int progress);
 
-        void onError(Exception exc);
+        void onSuccess(WebSnatch webSnatch, String html);
+
+        void onError(WebSnatch webSnatch, Exception exc);
+    }
+
+    public static class SimpleCompletion implements Completion {
+        @Override
+        public void onStarted(WebSnatch webSnatch) {
+        }
+
+        @Override
+        public void onProgress(WebSnatch webSnatch, int progress) {
+        }
+
+        @Override
+        public void onSuccess(WebSnatch webSnatch, String html) {
+        }
+
+        @Override
+        public void onError(WebSnatch webSnatch, Exception exc) {
+        }
     }
 }

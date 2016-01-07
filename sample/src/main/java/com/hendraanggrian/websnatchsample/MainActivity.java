@@ -118,14 +118,13 @@ public class MainActivity extends AppCompatActivity {
                     webSnatch.setUserAgent(userAgent);
                 if (timeout != -1)
                     webSnatch.setTimeout(timeout);
-                webSnatch.load(editText.getText().toString(), new WebSnatch.Completion() {
+                webSnatch.load(editText.getText().toString(), new WebSnatch.SimpleCompletion() {
                     @Override
-                    public void onProgress(int progress) {
-
+                    public void onProgress(WebSnatch webSnatch, int progress) {
                     }
 
                     @Override
-                    public void onSuccess(final String html) {
+                    public void onSuccess(WebSnatch webSnatch, final String html) {
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onError(Exception exc) {
+                    public void onError(WebSnatch webSnatch, Exception exc) {
                         exc.printStackTrace();
                     }
                 });
