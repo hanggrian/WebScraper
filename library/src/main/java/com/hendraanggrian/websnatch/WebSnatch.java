@@ -19,7 +19,7 @@ public class WebSnatch extends WebView {
     private final String NAME = "HTMLOUT";
     private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
 
-    private Handler timer;
+    private int timeout = -1;
 
     public WebSnatch(Context context) {
         super(context);
@@ -30,14 +30,8 @@ public class WebSnatch extends WebView {
         return this;
     }
 
-    public WebSnatch setTimeout(int timeout) {
-        timer = new Handler();
-        timer.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                throw new TimeoutException();
-            }
-        }, timeout);
+    public WebSnatch setTimeout(final int timeout) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -63,8 +57,16 @@ public class WebSnatch extends WebView {
 
                 WebViewClient webViewClient = new WebViewClient() {
                     @Override
-                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    public void onPageStarted(final WebView view, String url, Bitmap favicon) {
                         super.onPageStarted(view, url, favicon);
+                        if (timeout != -1)
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    view.stopLoading();
+                                    completion.onError(new TimeoutException("Loading webpage timeout at " + timeout + "ms"));
+                                }
+                            }, timeout);
                     }
 
                     @Override

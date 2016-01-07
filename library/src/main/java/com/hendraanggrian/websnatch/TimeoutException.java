@@ -1,10 +1,10 @@
 package com.hendraanggrian.websnatch;
 
 /**
- * Created by victorleonardo on 1/7/16.
+ * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public class TimeoutException extends RuntimeException {
-
-    public TimeoutException() {
+    public TimeoutException(String detailMessage) {
+        super(detailMessage);
     }
 }

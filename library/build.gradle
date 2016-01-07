@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 23
@@ -7,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
     }
     buildTypes {
         release {
@@ -22,4 +21,15 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.1'
+}
+
+publish {
+    userOrg = 'hendraanggrian'
+    groupId = 'com.hendraanggrian.websnatch'
+    artifactId = 'library'
+    publishVersion = '0.1.1'
+    desc = 'Webpage javascript source snatcher for Android'
+    website = 'https://github.com/hendraanggrian/web-snatch'
+
+    uploadName = 'web-snatch'
 }
