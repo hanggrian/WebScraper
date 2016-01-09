@@ -125,12 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(WebSnatch webSnatch, final String html) {
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                fragmentWebSnatch.load(html);
-                            }
-                        });
+                        fragmentWebSnatch.load(html);
                     }
 
                     @Override
