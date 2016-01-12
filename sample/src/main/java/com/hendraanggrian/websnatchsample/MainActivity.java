@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.userAgent:
                 int preposition;
-                if (userAgent.equals(UserAgent.MOBILE))
+                if (userAgent.equals(UserAgent.MOBILE.ANDROID_40))
                     preposition = 1;
-                else if (userAgent.equals(UserAgent.DESKTOP))
+                else if (userAgent.equals(UserAgent.DESKTOP.CHROME_41))
                     preposition = 2;
                 else
                     preposition = 0;
@@ -74,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
                                         userAgent = "";
                                         return true;
                                     case 1:
-                                        userAgent = UserAgent.MOBILE;
+                                        userAgent = UserAgent.MOBILE.ANDROID_40;
                                         return true;
                                     case 2:
-                                        userAgent = UserAgent.DESKTOP;
+                                        userAgent = UserAgent.DESKTOP.CHROME_41;
                                         return true;
                                     default:
                                         return true;

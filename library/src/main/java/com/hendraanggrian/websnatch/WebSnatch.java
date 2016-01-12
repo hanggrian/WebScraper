@@ -16,6 +16,8 @@ import java.net.URLConnection;
  */
 public class WebSnatch extends WebView {
 
+    private Activity activity;
+
     private final String NAME = "HTMLOUT";
     private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
 
@@ -25,7 +27,10 @@ public class WebSnatch extends WebView {
 
     public WebSnatch(Activity activity) {
         super(activity);
+<<<<<<< HEAD
         this.activity = activity;
+=======
+>>>>>>> 5c3bc443298605661cd9a729ab33d6cc41918e05
     }
 
     public WebSnatch setUserAgent(String userAgent) {
