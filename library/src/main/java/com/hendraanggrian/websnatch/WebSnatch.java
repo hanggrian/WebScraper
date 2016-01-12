@@ -1,6 +1,6 @@
 package com.hendraanggrian.websnatch;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -16,14 +16,16 @@ import java.net.URLConnection;
  */
 public class WebSnatch extends WebView {
 
+    private Activity activity;
+
     private final String NAME = "HTMLOUT";
     private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
 
     private AsyncTask<String, Void, String> loadTask;
     private int timeout = -1;
 
-    public WebSnatch(Context context) {
-        super(context);
+    public WebSnatch(Activity activity) {
+        super(activity);
     }
 
     public WebSnatch setUserAgent(String userAgent) {
@@ -100,8 +102,13 @@ public class WebSnatch extends WebView {
                 SnatchInterface snatchInterface = new SnatchInterface() {
                     @Override
                     @JavascriptInterface
-                    public void processHTML(String html) {
-                        completion.onSuccess(WebSnatch.this, html);
+                    public void processHTML(final String html) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                completion.onSuccess(WebSnatch.this, html);
+                            }
+                        });
                     }
                 };
 
