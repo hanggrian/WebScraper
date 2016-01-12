@@ -27,11 +27,7 @@ publish {
     userOrg = 'hendraanggrian'
     groupId = 'com.hendraanggrian.websnatch'
     artifactId = 'library'
-<<<<<<< HEAD
-    publishVersion = '0.1.6'
-=======
     publishVersion = '0.1.7'
->>>>>>> 5c3bc443298605661cd9a729ab33d6cc41918e05
     desc = 'Webpage javascript source snatcher for Android'
     website = 'https://github.com/hendraanggrian/web-snatch'
 
