@@ -81,7 +81,7 @@ public class WebSnatch extends WebView {
                                 @Override
                                 public void run() {
                                     view.stopLoading();
-                                    completion.onError(WebSnatch.this, new TimeoutException("Loading webpage timeout at " + timeout + "ms"));
+                                    completion.onError(WebSnatch.this, new TimeoutException(timeout));
                                 }
                             }, timeout);
                     }
