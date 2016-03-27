@@ -3,7 +3,6 @@ WebSnatch
 
 Grab the entire HTML source code generated from JavaScript:
 
-**UserPreferences.class**
 ```java
 new WebSnatch(this)
     .load(url, new WebSnatchCompletion() {
