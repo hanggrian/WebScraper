@@ -1,4 +1,4 @@
-package com.github.hendraanggrian.websnatchsample;
+package io.github.hendraanggrian.websnatchsample;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

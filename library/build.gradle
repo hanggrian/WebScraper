@@ -22,9 +22,9 @@ dependencies {
 
 publish {
     userOrg = 'hendraanggrian'
-    groupId = 'com.github.hendraanggrian'
+    groupId = 'io.github.hendraanggrian'
     artifactId = 'web-snatch'
-    publishVersion = '0.2.1'
+    publishVersion = '0.2.2'
     desc = 'Webpage javascript source snatcher for Android'
     website = 'https://github.com/hendraanggrian/web-snatch'
 

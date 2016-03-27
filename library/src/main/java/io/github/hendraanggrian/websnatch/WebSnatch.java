@@ -1,4 +1,4 @@
-package com.github.hendraanggrian.websnatch;
+package io.github.hendraanggrian.websnatch;
 
 import android.app.Activity;
 import android.content.Context;

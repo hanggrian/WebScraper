@@ -1,4 +1,4 @@
-package com.github.hendraanggrian.websnatchsample;
+package io.github.hendraanggrian.websnatchsample;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -15,9 +15,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.hendraanggrian.websnatch.UserAgent;
-import com.github.hendraanggrian.websnatch.WebSnatch;
-import com.github.hendraanggrian.websnatch.WebSnatchCompletion;
+import io.github.hendraanggrian.websnatch.UserAgent;
+import io.github.hendraanggrian.websnatch.WebSnatch;
+import io.github.hendraanggrian.websnatch.WebSnatchCompletion;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

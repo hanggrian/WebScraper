@@ -3,7 +3,6 @@ WebSnatch
 
 Grab the entire HTML source code generated from JavaScript:
 
-**UserPreferences.class**
 ```java
 new WebSnatch(this)
     .load(url, new WebSnatchCompletion() {
@@ -36,7 +35,7 @@ Download
 Download from Gradle line
 
 ```gradle
-compile 'com.github.hendraanggrian:web-snatch:0.2.1'
+compile 'io.github.hendraanggrian:web-snatch:0.2.2'
 ```
 
 

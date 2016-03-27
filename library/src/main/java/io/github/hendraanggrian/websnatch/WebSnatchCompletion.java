@@ -1,4 +1,4 @@
-package com.github.hendraanggrian.websnatch;
+package io.github.hendraanggrian.websnatch;
 
 /**
  * Created by hendraanggrian on 3/28/16.
