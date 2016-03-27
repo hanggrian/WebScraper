@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.hendraanggrian.websnatchsample"
+        applicationId "com.github.hendraanggrian.websnatchsample"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1

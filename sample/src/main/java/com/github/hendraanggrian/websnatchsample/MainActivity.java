@@ -1,4 +1,4 @@
-package com.hendraanggrian.websnatchsample;
+package com.github.hendraanggrian.websnatchsample;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -15,8 +15,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.hendraanggrian.websnatch.UserAgent;
-import com.hendraanggrian.websnatch.WebSnatch;
+import com.github.hendraanggrian.websnatch.UserAgent;
+import com.github.hendraanggrian.websnatch.WebSnatch;
+import com.github.hendraanggrian.websnatch.WebSnatchCompletion;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -43,6 +44,29 @@ public class MainActivity extends AppCompatActivity {
 
         viewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+
+        new WebSnatch(this)
+                .load("asdasd", new WebSnatchCompletion() {
+                    @Override
+                    public void onStarted(WebSnatch webSnatch) {
+
+                    }
+
+                    @Override
+                    public void onProgress(WebSnatch webSnatch, int progress) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(WebSnatch webSnatch, String html) {
+
+                    }
+
+                    @Override
+                    public void onError(WebSnatch webSnatch, Exception exc) {
+
+                    }
+                });
     }
 
     @Override
@@ -118,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     webSnatch.setUserAgent(userAgent);
                 if (timeout != -1)
                     webSnatch.setTimeout(timeout);
-                webSnatch.load(editText.getText().toString(), new WebSnatch.SimpleCompletion() {
+                webSnatch.load(editText.getText().toString(), new WebSnatchCompletion.Simple() {
                     @Override
                     public void onProgress(WebSnatch webSnatch, int progress) {
                     }

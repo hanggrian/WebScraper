@@ -1,4 +1,4 @@
-package com.hendraanggrian.websnatch;
+package com.github.hendraanggrian.websnatch;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,7 +37,7 @@ public class WebSnatch extends WebView {
         return this;
     }
 
-    public void load(String url, final Completion completion) {
+    public void load(String url, final WebSnatchCompletion completion) {
         loadTask = new AsyncTask<String, Void, String>() {
             Exception exception;
 
@@ -129,33 +129,5 @@ public class WebSnatch extends WebView {
     public interface SnatchInterface {
         @JavascriptInterface
         void processHTML(String html);
-    }
-
-    public interface Completion {
-        void onStarted(WebSnatch webSnatch);
-
-        void onProgress(WebSnatch webSnatch, int progress);
-
-        void onSuccess(WebSnatch webSnatch, String html);
-
-        void onError(WebSnatch webSnatch, Exception exc);
-    }
-
-    public static class SimpleCompletion implements Completion {
-        @Override
-        public void onStarted(WebSnatch webSnatch) {
-        }
-
-        @Override
-        public void onProgress(WebSnatch webSnatch, int progress) {
-        }
-
-        @Override
-        public void onSuccess(WebSnatch webSnatch, String html) {
-        }
-
-        @Override
-        public void onError(WebSnatch webSnatch, Exception exc) {
-        }
     }
 }

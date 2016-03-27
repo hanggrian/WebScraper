@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 9
         targetSdkVersion 23
     }
     buildTypes {
@@ -18,18 +18,17 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
 }
 
 publish {
     userOrg = 'hendraanggrian'
-    groupId = 'com.hendraanggrian.websnatch'
-    artifactId = 'library'
-    publishVersion = '0.2.0'
+    groupId = 'com.github.hendraanggrian'
+    artifactId = 'web-snatch'
+    publishVersion = '0.2.1'
     desc = 'Webpage javascript source snatcher for Android'
     website = 'https://github.com/hendraanggrian/web-snatch'
 
     uploadName = 'web-snatch'
 }
+
+//$ ./gradlew clean build bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey=BINTRAY_KEY -PdryRun=false
