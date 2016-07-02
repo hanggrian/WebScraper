@@ -6,7 +6,7 @@ android {
     buildToolsVersion "24.0.0"
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 17
         targetSdkVersion 24
     }
     buildTypes {
@@ -23,12 +23,12 @@ dependencies {
 publish {
     userOrg = 'hendraanggrian'
     groupId = 'io.github.hendraanggrian'
-    artifactId = 'websnatch'
+    artifactId = 'webreader'
     publishVersion = '0.3.0'
-    desc = 'Webpage javascript source snatcher for Android'
-    website = 'https://github.com/hendraanggrian/web-snatch'
+    desc = 'HTML and JavaScript source reader for Android.'
+    website = 'https://github.com/hendraanggrian/WebReader'
 
-    uploadName = 'WebSnatch'
+    uploadName = 'WebReader'
 }
 
-//$ ./gradlew clean build bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey=BINTRAY_KEY -PdryRun=false
+//$ ./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey=BINTRAY_KEY -PdryRun=false

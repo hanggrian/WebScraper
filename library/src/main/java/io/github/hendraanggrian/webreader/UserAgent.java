@@ -1,4 +1,4 @@
-package io.github.hendraanggrian.websnatch;
+package io.github.hendraanggrian.webreader;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)

@@ -1,28 +1,28 @@
-WebSnatch
+WebReader
 =========
 
-Grab the entire HTML source code generated from JavaScript:
+HTML and JavaScript source reader for Android.
 
 ```java
-new WebSnatch(this)
-    .load(url, new WebSnatchCompletion() {
+new WebReader(this, "http://www.google.com")
+    .read(new WebReader.Completion() {
         @Override
-        public void onStarted(WebSnatch webSnatch) {
+        public void onStarted() {
         
         }
         
         @Override
-        public void onProgress(WebSnatch webSnatch, int progress) {
+        public void onProgress(int progress) {
         
         }
         
         @Override
-        public void onSuccess(WebSnatch webSnatch, String html) {
+        public void onSuccess(String html) {
             
         }
         
         @Override
-        public void onError(WebSnatch webSnatch, Exception exc) {
+        public void onError(Exception exc) {
         
         }
 });
@@ -35,7 +35,7 @@ Download
 Download from Gradle line
 
 ```gradle
-compile 'io.github.hendraanggrian:web-snatch:0.2.2'
+compile 'io.github.hendraanggrian:webreader:0.3.0'
 ```
 
 
