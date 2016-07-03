@@ -15,16 +15,22 @@ public class WebReader extends WebView {
     private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
 
     private String url;
+    private boolean finished;
     private AsyncTask<Void, Void, WebSource> task;
 
     public WebReader(Activity activity, String url) {
         super(activity);
         this.url = url;
+        this.finished = false;
     }
 
     public WebReader userAgent(String userAgent) {
         this.getSettings().setUserAgentString(userAgent);
         return this;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     public void read(final Completion completion) {
@@ -50,6 +56,7 @@ public class WebReader extends WebView {
             protected void onPostExecute(WebSource webSource) {
                 if (webSource == null && exception != null) {
                     completion.onError(exception);
+                    finished = true;
                     return;
                 }
 
@@ -76,6 +83,7 @@ public class WebReader extends WebView {
                             @Override
                             public void run() {
                                 completion.onSuccess(html);
+                                finished = true;
                             }
                         });
                     }
