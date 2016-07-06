@@ -1,7 +1,7 @@
 package io.github.hendraanggrian.webreader;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
@@ -26,13 +26,13 @@ public class WebReader extends WebView {
     private boolean fetchLongUrl;
     private ExpandUrlTask task;
 
-    public WebReader(Context context) {
-        super(context);
+    public WebReader(Activity activity) {
+        super(activity);
         init();
     }
 
-    public WebReader(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    public WebReader(Activity activity, AttributeSet attrs) {
+        super(activity, attrs);
         init();
     }
 
@@ -126,7 +126,7 @@ public class WebReader extends WebView {
         }
 
         @Override
-        public void onPageFinished(final WebView view, final String url) {
+        public void onPageFinished(WebView view, final String url) {
             super.onPageFinished(view, url);
             finished = true;
             view.loadUrl(PROCESS_URL);
@@ -152,9 +152,14 @@ public class WebReader extends WebView {
     private JsInterface jsInterface = new JsInterface() {
         @Override
         @JavascriptInterface
-        public void processHTML(String html) {
-            for (Callback callback : callbacks)
-                callback.onSuccess(WebReader.this, html);
+        public void processHTML(final String html) {
+            ((Activity) getContext()).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (Callback callback : callbacks)
+                        callback.onSuccess(WebReader.this, html);
+                }
+            });
         }
     };
 
