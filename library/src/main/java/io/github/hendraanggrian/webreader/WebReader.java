@@ -1,8 +1,8 @@
 package io.github.hendraanggrian.webreader;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -25,16 +25,19 @@ public class WebReader extends WebView {
 
     public WebReader(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public WebReader(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private void init() {
+    private void init(Context context) {
+        if (!(context instanceof Activity))
+            throw new RuntimeException("Please use Activity as first param of WebReader constructor, not plain Context.");
+
         this.getSettings().setJavaScriptEnabled(true);
         this.callbacks = new ArrayList<>();
     }
@@ -134,7 +137,7 @@ public class WebReader extends WebView {
             @Override
             @JavascriptInterface
             public void processHTML(final String html) {
-                new Handler().post(new Runnable() {
+                ((Activity) getContext()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         for (Callback callback : callbacks)
