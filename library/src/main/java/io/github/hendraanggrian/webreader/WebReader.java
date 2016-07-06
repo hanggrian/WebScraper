@@ -97,7 +97,8 @@ public class WebReader extends WebView {
     }
 
     public void stop() {
-        task.cancel(true);
+        if (task != null && !task.isCancelled())
+            task.cancel(true);
         setWebViewClient(null);
         removeJavascriptInterface(NAME);
         stopLoading();
