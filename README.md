@@ -4,28 +4,28 @@ WebReader
 HTML and JavaScript source reader for Android.
 
 ```java
-new WebReader(this, "http://www.google.com")
-    .read(new WebReader.Completion() {
+new WebReader(this)
+    .addCallback(new WebReader.Callback() {
         @Override
-        public void onStarted() {
+        public void onStarted(WebReader reader) {
         
         }
         
         @Override
-        public void onProgress(int progress) {
+        public void onProgress(WebReader reader, int progress) {
         
         }
         
         @Override
-        public void onSuccess(String html) {
+        public void onSuccess(WebReader reader, String html) {
             
         }
         
         @Override
-        public void onError(Exception exc) {
+        public void onError(WebReader reader, Exception exc) {
         
         }
-});
+    }).loadUrl("http://www.google.com");
 ```
 
 
@@ -35,7 +35,7 @@ Download
 Download from Gradle line
 
 ```gradle
-compile 'io.github.hendraanggrian:webreader:0.3.0'
+compile 'io.github.hendraanggrian:webreader:0.3.2'
 ```
 
 

@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Web Snatch Sample</string>
+    <string name="app_name">WebReader Sample</string>
+
+    <string name="extra_title">extra_title</string>
+    <string name="extra_subtitle">extra_subtitle</string>
+    <string name="extra_content">extra_content</string>
 </resources>

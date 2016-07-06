@@ -1,137 +1,174 @@
 package io.github.hendraanggrian.webreader;
 
-import android.app.Activity;
-import android.os.AsyncTask;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public class WebReader extends WebView {
 
-    private final String NAME = "HTMLOUT";
-    private final String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";
+    private static final String NAME = "HTMLOUT";
+    private static final String PROCESS_URL = "javascript:window." + NAME + ".processHTML(document.getElementsByTagName('html')[0].innerHTML);";
 
-    private String url;
-    private boolean finished;
-    private AsyncTask<Void, Void, WebSource> task;
+    private List<Callback> callbacks;
+    private boolean fetchLongUrl;
+    private ExpandUrlTask task;
 
-    public WebReader(Activity activity, String url) {
-        super(activity);
-        this.url = url;
-        this.finished = false;
+    public WebReader(Context context) {
+        super(context);
+        init();
     }
 
-    public WebReader userAgent(String userAgent) {
+    public WebReader(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void init() {
+        this.getSettings().setJavaScriptEnabled(true);
+        this.callbacks = new ArrayList<>();
+    }
+
+    public WebReader addCallback(Callback callback) {
+        this.callbacks.add(callback);
+        return this;
+    }
+
+    public WebReader removeCallback(Callback callback) {
+        this.callbacks.remove(callback);
+        return this;
+    }
+
+    public WebReader removeAllCallbacks() {
+        this.callbacks.clear();
+        return this;
+    }
+
+    public WebReader setUserAgent(String userAgent) {
         this.getSettings().setUserAgentString(userAgent);
         return this;
     }
 
-    public boolean isFinished() {
-        return finished;
+    public WebReader fetchLongUrl(boolean fetchLongUrl) {
+        this.fetchLongUrl = fetchLongUrl;
+        return this;
     }
 
-    public void read(final Completion completion) {
-        task = new AsyncTask<Void, Void, WebSource>() {
-            private Exception exception;
+    @Override
+    public void loadUrl(String url) {
+        for (Callback callback : callbacks)
+            callback.onStarted(this);
 
-            @Override
-            protected void onPreExecute() {
-                completion.onStarted();
-            }
+        if (fetchLongUrl) {
+            task = new ExpandUrlTask() {
+                @Override
+                protected void onPostExecute(Object o) {
+                    if (o instanceof Exception) {
+                        for (Callback callback : callbacks)
+                            callback.onError(WebReader.this, (Exception) o);
 
-            @Override
-            protected WebSource doInBackground(Void... urls) {
-                try {
-                    return new WebSource(url);
-                } catch (Exception exc) {
-                    this.exception = exc;
-                    return null;
+                    } else if (o instanceof String) {
+                        setWebViewClient(client);
+                        addJavascriptInterface(jsInterface, NAME);
+                        WebReader.super.loadUrl(o.toString());
+                    }
                 }
-            }
+            };
+            task.execute(url);
+        }
 
-            @Override
-            protected void onPostExecute(WebSource webSource) {
-                if (webSource == null && exception != null) {
-                    completion.onError(exception);
-                    finished = true;
-                    return;
-                }
-
-                WebViewClient webViewClient = new WebViewClient() {
-                    @Override
-                    public void onLoadResource(WebView view, String url) {
-                        super.onLoadResource(view, url);
-                        completion.onProgress(view.getProgress());
-                    }
-
-                    @Override
-                    public void onPageFinished(final WebView view, final String url) {
-                        super.onPageFinished(view, url);
-                        view.loadUrl(PROCESS_URL);
-                    }
-                };
-
-                getSettings().setJavaScriptEnabled(true);
-                addJavascriptInterface(new JavaScriptInterface() {
-                    @Override
-                    @JavascriptInterface
-                    public void processHTML(final String html) {
-                        ((Activity) getContext()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                completion.onSuccess(html);
-                                finished = true;
-                            }
-                        });
-                    }
-                }, NAME);
-                setWebViewClient(webViewClient);
-                loadUrl(webSource.getLongUrl());
-            }
-        };
-        task.execute();
+        setWebViewClient(client);
+        addJavascriptInterface(jsInterface, NAME);
+        super.loadUrl(url);
     }
 
     public void stop() {
         task.cancel(true);
-        getSettings().setJavaScriptEnabled(false);
         setWebViewClient(null);
+        removeJavascriptInterface(NAME);
         stopLoading();
     }
 
-    private interface JavaScriptInterface {
+    public void retry() {
+        stop();
+        loadUrl(getUrl());
+    }
+
+    private WebViewClient client = new WebViewClient() {
+        @Override
+        public void onLoadResource(WebView view, String url) {
+            super.onLoadResource(view, url);
+            for (Callback callback : callbacks)
+                callback.onProgress(WebReader.this, view.getProgress());
+        }
+
+        @Override
+        public void onPageFinished(final WebView view, final String url) {
+            super.onPageFinished(view, url);
+            view.loadUrl(PROCESS_URL);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            super.onReceivedError(view, request, error);
+            for (Callback callback : callbacks)
+                callback.onError(WebReader.this, new HostUnresolvedException(getUrl()));
+        }
+
+        @Override
+        public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            super.onReceivedHttpError(view, request, errorResponse);
+            for (Callback callback : callbacks)
+                callback.onError(WebReader.this, new HostUnresolvedException(getUrl()));
+        }
+    };
+
+    private JsInterface jsInterface = new JsInterface() {
+        @Override
         @JavascriptInterface
-        void processHTML(String html);
+        public void processHTML(String html) {
+            for (Callback callback : callbacks)
+                callback.onSuccess(WebReader.this, html);
+        }
+    };
+
+    public interface Callback {
+        void onStarted(WebReader reader);
+
+        void onProgress(WebReader reader, int progress);
+
+        void onSuccess(WebReader reader, String html);
+
+        void onError(WebReader reader, Exception exc);
     }
 
-    public static abstract class Completion {
-        public abstract void onStarted();
-
-        public abstract void onProgress(int progress);
-
-        public abstract void onSuccess(String source);
-
-        public abstract void onError(Exception exc);
-    }
-
-    public static class SimpleCompletion extends Completion {
+    public static class SimpleCallback implements Callback {
         @Override
-        public void onStarted() {
+        public void onStarted(WebReader reader) {
         }
 
         @Override
-        public void onProgress(int progress) {
+        public void onProgress(WebReader reader, int progress) {
         }
 
         @Override
-        public void onSuccess(String source) {
+        public void onSuccess(WebReader reader, String html) {
         }
 
         @Override
-        public void onError(Exception exc) {
+        public void onError(WebReader reader, Exception exc) {
         }
     }
 }
