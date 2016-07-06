@@ -1,4 +1,4 @@
-package io.github.hendraanggrian.webreader;
+package io.github.hendraanggrian.webreader.internal;
 
 import android.os.AsyncTask;
 
