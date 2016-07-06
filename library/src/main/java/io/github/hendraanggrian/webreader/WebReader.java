@@ -87,11 +87,12 @@ public class WebReader extends WebView {
                 }
             };
             task.execute(url);
-        }
 
-        setWebViewClient(client);
-        addJavascriptInterface(jsInterface, NAME);
-        super.loadUrl(url);
+        } else {
+            setWebViewClient(client);
+            addJavascriptInterface(jsInterface, NAME);
+            WebReader.super.loadUrl(url);
+        }
     }
 
     public void stop() {
