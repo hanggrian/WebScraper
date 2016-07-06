@@ -2,6 +2,7 @@ package io.github.hendraanggrian.webreader;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
@@ -108,22 +109,33 @@ public class WebReader extends WebView {
     }
 
     private WebViewClient client = new WebViewClient() {
+        private boolean finished;
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            finished = false;
+        }
+
         @Override
         public void onLoadResource(WebView view, String url) {
             super.onLoadResource(view, url);
-            for (Callback callback : callbacks)
-                callback.onProgress(WebReader.this, view.getProgress());
+            if (!finished)
+                for (Callback callback : callbacks)
+                    callback.onProgress(WebReader.this, view.getProgress());
         }
 
         @Override
         public void onPageFinished(final WebView view, final String url) {
             super.onPageFinished(view, url);
+            finished = true;
             view.loadUrl(PROCESS_URL);
         }
 
         @Override
         public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             super.onReceivedError(view, request, error);
+            finished = true;
             for (Callback callback : callbacks)
                 callback.onError(WebReader.this, new HostUnresolvedException(getUrl()));
         }
@@ -131,6 +143,7 @@ public class WebReader extends WebView {
         @Override
         public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
             super.onReceivedHttpError(view, request, errorResponse);
+            finished = true;
             for (Callback callback : callbacks)
                 callback.onError(WebReader.this, new HostUnresolvedException(getUrl()));
         }

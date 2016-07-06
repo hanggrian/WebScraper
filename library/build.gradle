@@ -24,7 +24,7 @@ publish {
     userOrg = 'hendraanggrian'
     groupId = 'io.github.hendraanggrian'
     artifactId = 'webreader'
-    publishVersion = '0.3.3'
+    publishVersion = '0.3.4'
     desc = 'HTML and JavaScript source reader for Android.'
     website = 'https://github.com/hendraanggrian/WebReader'
 
