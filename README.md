@@ -35,7 +35,7 @@ Download
 Download from Gradle line
 
 ```gradle
-compile 'io.github.hendraanggrian:webreader:0.3.2'
+compile 'io.github.hendraanggrian:webreader:0.3.6'
 ```
 
 
