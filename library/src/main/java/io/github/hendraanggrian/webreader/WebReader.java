@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -134,6 +135,13 @@ public class WebReader extends WebView {
         }
 
         @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+            for (Callback callback : callbacks)
+                callback.onRequest(WebReader.this, url);
+            return super.shouldInterceptRequest(view, url);
+        }
+
+        @Override
         public void onPageFinished(WebView view, final String url) {
             super.onPageFinished(view, url);
             view.loadUrl(WebReaderInterface.PROCESS_URL);
@@ -159,6 +167,8 @@ public class WebReader extends WebView {
 
         void onProgress(WebReader reader, int progress);
 
+        void onRequest(WebReader reader, String url);
+
         void onSuccess(WebReader reader, String html);
 
         void onError(WebReader reader, Exception exc);
@@ -171,6 +181,10 @@ public class WebReader extends WebView {
 
         @Override
         public void onProgress(WebReader reader, int progress) {
+        }
+
+        @Override
+        public void onRequest(WebReader reader, String url) {
         }
 
         @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -33,49 +34,50 @@ public class MainActivity extends AppCompatActivity {
 
         ExtraCollector.init(this);
 
-        webReader.addCallback(new WebReader.SimpleCallback() {
-            @Override
-            public void onProgress(WebReader reader, int progress) {
-                item_Status.setTitle(String.valueOf(progress) + "%");
-                item_Status.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        webReader
+                .addCallback(new WebReader.SimpleCallback() {
                     @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        return false;
+                    public void onProgress(WebReader reader, int progress) {
+                        item_Status.setTitle(String.valueOf(progress) + "%");
+                        item_Status.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                return false;
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(WebReader reader, final String html) {
+                        item_Status.setTitle("See HTML");
+                        item_Status.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                Extras extras = new Extras()
+                                        .putString(R.string.extra_title, webReader.getTitle())
+                                        .putString(R.string.extra_subtitle, webReader.getUrl())
+                                        .putString(R.string.extra_content, html);
+
+                                Intent intent = new Intent(MainActivity.this, ViewActivity.class);
+                                intent.putExtras(extras.toBundle());
+                                startActivity(intent);
+                                return true;
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(WebReader reader, Exception exc) {
+                        exc.printStackTrace();
+                        item_Status.setTitle("Error");
+                        item_Status.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                return false;
+                            }
+                        });
                     }
                 });
-            }
-
-            @Override
-            public void onSuccess(WebReader reader, final String html) {
-                item_Status.setTitle("See HTML");
-                item_Status.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        Extras extras = new Extras()
-                                .putString(R.string.extra_title, webReader.getTitle())
-                                .putString(R.string.extra_subtitle, webReader.getUrl())
-                                .putString(R.string.extra_content, html);
-
-                        Intent intent = new Intent(MainActivity.this, ViewActivity.class);
-                        intent.putExtras(extras.toBundle());
-                        startActivity(intent);
-                        return true;
-                    }
-                });
-            }
-
-            @Override
-            public void onError(WebReader reader, Exception exc) {
-                exc.printStackTrace();
-                item_Status.setTitle("Error");
-                item_Status.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem menuItem) {
-                        return false;
-                    }
-                });
-            }
-        });
     }
 
     @Override

@@ -17,6 +17,11 @@ new WebReader(this)
         }
         
         @Override
+        public void onRequest(WebReader reader, String url) {
+            
+        }
+        
+        @Override
         public void onSuccess(WebReader reader, String html) {
             
         }
@@ -35,7 +40,7 @@ Download
 Download from Gradle line
 
 ```gradle
-compile 'io.github.hendraanggrian:webreader:0.4.4'
+compile 'io.github.hendraanggrian:webreader:0.5.0'
 ```
 
 

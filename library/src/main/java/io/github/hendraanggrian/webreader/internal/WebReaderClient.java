@@ -1,6 +1,9 @@
 package io.github.hendraanggrian.webreader.internal;
 
 import android.graphics.Bitmap;
+import android.util.Log;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
