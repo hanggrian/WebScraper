@@ -1,4 +1,4 @@
-package io.github.hendraanggrian.webreadersample;
+package io.github.hendraanggrian.webscrapersample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,14 +8,14 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.github.hendraanggrian.extracollector.ExtraCollector;
-import io.github.hendraanggrian.extracollector.annotation.Extra;
+import io.github.hendraanggrian.lazy.intent.ExtraRes;
+import io.github.hendraanggrian.lazy.intent.LazyIntent;
 
 public class ViewActivity extends AppCompatActivity {
 
-    @Extra(R.string.extra_title) String extra_title;
-    @Extra(R.string.extra_subtitle) String extra_subtitle;
-    @Extra(R.string.extra_content) String extra_content;
+    @ExtraRes(R.string.extra_title) String extra_title;
+    @ExtraRes(R.string.extra_subtitle) String extra_subtitle;
+    @ExtraRes(R.string.extra_content) String extra_content;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.textView) TextView textView;
@@ -26,7 +26,7 @@ public class ViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_view);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        ExtraCollector.onCreate(this);
+        LazyIntent.collect(this);
 
         getSupportActionBar().setTitle(extra_title);
         getSupportActionBar().setSubtitle(extra_subtitle);

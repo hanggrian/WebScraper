@@ -1,11 +1,11 @@
-package io.github.hendraanggrian.webreader.internal;
+package io.github.hendraanggrian.webscraper.internal;
 
 import android.webkit.JavascriptInterface;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-public interface WebReaderInterface {
+public interface WebScraperInterface {
 
     String NAME = "HTMLOUT";
     String PROCESS_URL = "javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML);";

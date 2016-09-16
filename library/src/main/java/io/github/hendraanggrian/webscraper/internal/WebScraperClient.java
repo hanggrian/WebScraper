@@ -1,16 +1,13 @@
-package io.github.hendraanggrian.webreader.internal;
+package io.github.hendraanggrian.webscraper.internal;
 
 import android.graphics.Bitmap;
-import android.util.Log;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-public abstract class WebReaderClient extends WebViewClient {
+public abstract class WebScraperClient extends WebViewClient {
 
     protected boolean finished;
 

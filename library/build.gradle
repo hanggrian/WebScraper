@@ -3,7 +3,7 @@ apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         minSdkVersion 17
@@ -23,12 +23,12 @@ dependencies {
 publish {
     userOrg = 'hendraanggrian'
     groupId = 'io.github.hendraanggrian'
-    artifactId = 'webreader'
-    publishVersion = '0.5.0'
-    desc = 'HTML and JavaScript source reader for Android.'
-    website = 'https://github.com/hendraanggrian/WebReader'
+    artifactId = 'webscraper'
+    publishVersion = '0.0.1'
+    desc = 'HTML and JavaScript source scraper for Android.'
+    website = 'https://github.com/hendraanggrian/WebScraper'
 
-    uploadName = 'WebReader'
+    uploadName = 'webscraper'
 }
 
-//$ ./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey=BINTRAY_KEY -PdryRun=false
+//$ ./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey= -PdryRun=false

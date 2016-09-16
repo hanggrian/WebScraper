@@ -1,4 +1,4 @@
-package io.github.hendraanggrian.webreader;
+package io.github.hendraanggrian.webscraper;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,25 +12,25 @@ import android.webkit.WebViewClient;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.hendraanggrian.webreader.internal.ExpandUrlTask;
-import io.github.hendraanggrian.webreader.internal.WebReaderClient;
-import io.github.hendraanggrian.webreader.internal.WebReaderInterface;
+import io.github.hendraanggrian.webscraper.internal.ExpandUrlTask;
+import io.github.hendraanggrian.webscraper.internal.WebScraperClient;
+import io.github.hendraanggrian.webscraper.internal.WebScraperInterface;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-public class WebReader extends WebView {
+public class WebScraper extends WebView {
 
     private List<Callback> callbacks;
     private boolean fetchLongUrl;
     private ExpandUrlTask task;
 
-    public WebReader(Context context) {
+    public WebScraper(Context context) {
         super(context);
         init(context);
     }
 
-    public WebReader(Context context, AttributeSet attrs) {
+    public WebScraper(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
@@ -38,40 +38,40 @@ public class WebReader extends WebView {
     @SuppressLint("SetJavaScriptEnabled")
     private void init(Context context) {
         if (!(context instanceof Activity))
-            throw new RuntimeException("Please use Activity as first param of WebReader constructor, not plain Context.");
+            throw new RuntimeException("Please use Activity as first param of WebScraper constructor, not plain Context.");
 
         this.callbacks = new ArrayList<>();
         this.getSettings().setJavaScriptEnabled(true);
     }
 
-    public WebReader addCallback(Callback callback) {
+    public WebScraper addCallback(Callback callback) {
         this.callbacks.add(callback);
         return this;
     }
 
-    public WebReader removeCallback(Callback callback) {
+    public WebScraper removeCallback(Callback callback) {
         this.callbacks.remove(callback);
         return this;
     }
 
-    public WebReader removeAllCallbacks() {
+    public WebScraper removeAllCallbacks() {
         this.callbacks.clear();
         return this;
     }
 
-    public WebReader setUserAgent(String userAgent) {
+    public WebScraper setUserAgent(String userAgent) {
         this.getSettings().setUserAgentString(userAgent);
         return this;
     }
 
-    public WebReader fetchLongUrl(boolean fetchLongUrl) {
+    public WebScraper fetchLongUrl(boolean fetchLongUrl) {
         this.fetchLongUrl = fetchLongUrl;
         return this;
     }
 
     @Override
     public void loadUrl(String url) {
-        if (url.equals(WebReaderInterface.PROCESS_URL)) {
+        if (url.equals(WebScraperInterface.PROCESS_URL)) {
             super.loadUrl(url);
             return;
         }
@@ -83,36 +83,36 @@ public class WebReader extends WebView {
             task = new ExpandUrlTask() {
                 @Override
                 protected void onPreExecute() {
-                    for (WebReader.Callback callback : callbacks)
-                        callback.onProgress(WebReader.this, 0);
+                    for (WebScraper.Callback callback : callbacks)
+                        callback.onProgress(WebScraper.this, 0);
                 }
 
                 @Override
                 protected void onPostExecute(Object o) {
                     if (o instanceof Exception) {
                         for (Callback callback : callbacks)
-                            callback.onError(WebReader.this, (Exception) o);
+                            callback.onError(WebScraper.this, (Exception) o);
 
                     } else if (o instanceof String) {
-                        addJavascriptInterface(readerInterface, WebReaderInterface.NAME);
-                        setWebViewClient(readerClient);
-                        WebReader.super.loadUrl(o.toString());
+                        addJavascriptInterface(scraperInterface, WebScraperInterface.NAME);
+                        setWebViewClient(scraperClient);
+                        WebScraper.super.loadUrl(o.toString());
                     }
                 }
             };
             task.execute(url);
 
         } else {
-            addJavascriptInterface(readerInterface, WebReaderInterface.NAME);
-            setWebViewClient(readerClient);
-            WebReader.super.loadUrl(url);
+            addJavascriptInterface(scraperInterface, WebScraperInterface.NAME);
+            setWebViewClient(scraperClient);
+            WebScraper.super.loadUrl(url);
         }
     }
 
     public void stop() {
         if (task != null && !task.isCancelled())
             task.cancel(true);
-        removeJavascriptInterface(WebReaderInterface.NAME);
+        removeJavascriptInterface(WebScraperInterface.NAME);
         setWebViewClient(new WebViewClient());
 
         stopLoading();
@@ -125,30 +125,30 @@ public class WebReader extends WebView {
         loadUrl(getOriginalUrl());
     }
 
-    private WebReaderClient readerClient = new WebReaderClient() {
+    private WebScraperClient scraperClient = new WebScraperClient() {
         @Override
         public void onLoadResource(WebView view, String url) {
             super.onLoadResource(view, url);
             if (!finished)
                 for (Callback callback : callbacks)
-                    callback.onProgress(WebReader.this, view.getProgress());
+                    callback.onProgress(WebScraper.this, view.getProgress());
         }
 
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
             for (Callback callback : callbacks)
-                callback.onRequest(WebReader.this, url);
+                callback.onRequest(WebScraper.this, url);
             return super.shouldInterceptRequest(view, url);
         }
 
         @Override
         public void onPageFinished(WebView view, final String url) {
             super.onPageFinished(view, url);
-            view.loadUrl(WebReaderInterface.PROCESS_URL);
+            view.loadUrl(WebScraperInterface.PROCESS_URL);
         }
     };
 
-    private WebReaderInterface readerInterface = new WebReaderInterface() {
+    private WebScraperInterface scraperInterface = new WebScraperInterface() {
         @Override
         @JavascriptInterface
         public void processHTML(final String html) {
@@ -156,43 +156,43 @@ public class WebReader extends WebView {
                 @Override
                 public void run() {
                     for (Callback callback : callbacks)
-                        callback.onSuccess(WebReader.this, html);
+                        callback.onSuccess(WebScraper.this, html);
                 }
             });
         }
     };
 
     public interface Callback {
-        void onStarted(WebReader reader);
+        void onStarted(WebScraper scraper);
 
-        void onProgress(WebReader reader, int progress);
+        void onProgress(WebScraper scraper, int progress);
 
-        void onRequest(WebReader reader, String url);
+        void onRequest(WebScraper scraper, String url);
 
-        void onSuccess(WebReader reader, String html);
+        void onSuccess(WebScraper scraper, String html);
 
-        void onError(WebReader reader, Exception exc);
+        void onError(WebScraper scraper, Exception exc);
     }
 
     public static class SimpleCallback implements Callback {
         @Override
-        public void onStarted(WebReader reader) {
+        public void onStarted(WebScraper scraper) {
         }
 
         @Override
-        public void onProgress(WebReader reader, int progress) {
+        public void onProgress(WebScraper scraper, int progress) {
         }
 
         @Override
-        public void onRequest(WebReader reader, String url) {
+        public void onRequest(WebScraper scraper, String url) {
         }
 
         @Override
-        public void onSuccess(WebReader reader, String html) {
+        public void onSuccess(WebScraper scraper, String html) {
         }
 
         @Override
-        public void onError(WebReader reader, Exception exc) {
+        public void onError(WebScraper scraper, Exception exc) {
         }
     }
 }
