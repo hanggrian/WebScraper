@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/item"
+        android:icon="@drawable/ic_load"
+        android:title="Load"
+        app:showAsAction="always"/>
+
+    <group
+        android:id="@+id/group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_TimeoutNone"
+            android:checked="true"
+            android:title="No timeout"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/item_Timeout5s"
+            android:title="5 seconds"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/item_Timeout15s"
+            android:title="15 seconds"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/item_Timeout30s"
+            android:title="30 seconds"
+            app:showAsAction="never"/>
+    </group>
+</menu>

@@ -1,1 +1,1 @@
-include ':library', ':sample'
+include ':webscraper', ':webscraper-sample'
