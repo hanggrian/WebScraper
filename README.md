@@ -5,7 +5,13 @@ HTML and JavaScript source scraper for Android.
 
 ```java
 new WebScraper(this)
-    .addCallback(new WebScraper.Callback() {
+    .setTimeout(5000, new WebScraper.OnTimeoutListener() { // optional
+        @Override
+        public void onTimeout(WebScraper scraper) {
+
+        }
+    })
+    .loadUrl("http://www.google.com", new WebScraper.Callback() {
         @Override
         public void onStarted(WebScraper scraper) {
 
@@ -25,12 +31,7 @@ new WebScraper(this)
         public void onSuccess(WebScraper scraper, String html) {
 
         }
-
-        @Override
-        public void onError(WebScraper scraper, Exception exc) {
-
-        }
-    }).loadUrl("http://www.google.com");
+    });
 ```
 
 
@@ -40,5 +41,5 @@ Download
 Download from Gradle line
 
 ```gradle
-compile 'io.github.hendraanggrian:webscraper:0.0.1'
+compile 'io.github.hendraanggrian:webscraper:0.0.2'
 ```
