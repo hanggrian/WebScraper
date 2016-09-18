@@ -1,4 +1,4 @@
-package com.hendraanggrian.websnatchsample;
+package com.hendraanggrian.webscrapersample;
 
 import org.junit.Test;
 

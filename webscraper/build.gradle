@@ -24,7 +24,7 @@ publish {
     userOrg = 'hendraanggrian'
     groupId = 'io.github.hendraanggrian'
     artifactId = 'webscraper'
-    publishVersion = '0.0.2'
+    publishVersion = '0.0.7'
     desc = 'HTML and JavaScript source scraper for Android.'
     website = 'https://github.com/hendraanggrian/WebScraper'
 

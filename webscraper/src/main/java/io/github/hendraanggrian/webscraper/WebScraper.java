@@ -3,8 +3,8 @@ package io.github.hendraanggrian.webscraper;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -17,7 +17,10 @@ import android.webkit.WebViewClient;
  */
 public class WebScraper extends WebScraperBase {
 
+    private String url;
+    private Callback callback;
     private OnTimeoutListener timeoutListener;
+    private boolean isFinished;
 
     public WebScraper(Context context) {
         super(context);
@@ -45,7 +48,7 @@ public class WebScraper extends WebScraperBase {
         return this;
     }
 
-    public WebScraper setTimeout(int timeout, OnTimeoutListener listener) {
+    public WebScraper timeout(int timeout, OnTimeoutListener listener) {
         this.timeoutListener = listener;
         this.timeoutListener.setTimeout(timeout);
         return this;
@@ -56,7 +59,14 @@ public class WebScraper extends WebScraperBase {
         return this;
     }
 
-    public void loadUrl(String url, final Callback callback) {
+    public WebScraper callback(Callback callback) {
+        this.callback = callback;
+        return this;
+    }
+
+    @Override
+    public void loadUrl(String url) {
+        this.url = url;
         if (!url.equals(PROCESS_URL)) {
             callback.onStarted(this);
             addJavascriptInterface(new JavascriptProcessor() {
@@ -73,6 +83,30 @@ public class WebScraper extends WebScraperBase {
             }, NAME);
             setWebViewClient(new WebViewClient() {
                 @Override
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    isFinished = false;
+                    if (timeoutListener != null)
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(timeoutListener.getTimeout());
+                                } catch (InterruptedException exc) {
+                                    exc.printStackTrace();
+                                }
+                                if (!isFinished)
+                                    ((Activity) getContext()).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            stop();
+                                            timeoutListener.onTimeout(WebScraper.this);
+                                        }
+                                    });
+                            }
+                        }).start();
+                }
+
+                @Override
                 public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
                     callback.onRequest(WebScraper.this, url);
                     return super.shouldInterceptRequest(view, url);
@@ -80,7 +114,7 @@ public class WebScraper extends WebScraperBase {
 
                 @Override
                 public void onPageFinished(WebView view, final String url) {
-                    super.onPageFinished(view, url);
+                    isFinished = true;
                     view.loadUrl(PROCESS_URL);
                 }
             });
@@ -90,24 +124,11 @@ public class WebScraper extends WebScraperBase {
                     callback.onProgress(WebScraper.this, newProgress);
                 }
             });
-
-            if (timeoutListener != null)
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        stop();
-                        timeoutListener.onTimeout(WebScraper.this);
-                    }
-                }, timeoutListener.getTimeout());
         }
         super.loadUrl(url);
     }
 
     public void stop() {
-        removeJavascriptInterface(NAME);
-        setWebViewClient(new WebViewClient());
-        setWebChromeClient(new WebChromeClient());
-
         stopLoading();
         clearHistory();
         clearCache(true);
@@ -115,7 +136,7 @@ public class WebScraper extends WebScraperBase {
 
     public void retry() {
         stop();
-        loadUrl(getOriginalUrl());
+        loadUrl(url);
     }
 
     public static abstract class OnTimeoutListener {

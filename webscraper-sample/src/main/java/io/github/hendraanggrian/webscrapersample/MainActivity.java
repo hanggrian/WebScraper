@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @BindView(R.id.floatingActionButton) FloatingActionButton floatingActionButton;
 
     private Menu menu;
-    private WebScraper.Callback callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(this, R.color.colorAccent));
         swipeRefreshLayout.setOnRefreshListener(this);
 
-        callback = new WebScraper.SimpleCallback() {
+        webScraper.callback(new WebScraper.SimpleCallback() {
             @Override
             public void onStarted(WebScraper scraper) {
                 menu.findItem(R.id.item).setIcon(R.drawable.ic_stop);
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     }
                 });
             }
-        };
+        });
     }
 
     @Override
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         switch (item.getItemId()) {
             case R.id.item:
                 if (item.getIcon().getConstantState().equals(ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_load).getConstantState())) {
-                    webScraper.loadUrl(editText.getText().toString(), callback);
+                    webScraper.loadUrl(editText.getText().toString());
                     if (getCurrentFocus() == editText)
                         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editText.getWindowToken(), 0);
                 } else {
@@ -106,15 +105,16 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 webScraper.clearTimeout();
                 return true;
             case R.id.item_Timeout5s:
-                webScraper.setTimeout(5000, new WebScraper.OnTimeoutListener() {
+                webScraper.timeout(2000, new WebScraper.OnTimeoutListener() {
                     @Override
                     public void onTimeout(WebScraper webScraper) {
+                        webScraper.retry();
                         Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_SHORT).show();
                     }
                 });
                 return true;
             case R.id.item_Timeout15s:
-                webScraper.setTimeout(15000, new WebScraper.OnTimeoutListener() {
+                webScraper.timeout(15000, new WebScraper.OnTimeoutListener() {
                     @Override
                     public void onTimeout(WebScraper webScraper) {
                         Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_SHORT).show();
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 });
                 return true;
             case R.id.item_Timeout30s:
-                webScraper.setTimeout(30000, new WebScraper.OnTimeoutListener() {
+                webScraper.timeout(30000, new WebScraper.OnTimeoutListener() {
                     @Override
                     public void onTimeout(WebScraper webScraper) {
                         Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_SHORT).show();
