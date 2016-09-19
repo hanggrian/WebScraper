@@ -1,7 +1,6 @@
 package io.github.hendraanggrian.webscraper;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -73,12 +72,13 @@ public class WebScraper extends WebScraperBase {
                 @Override
                 @JavascriptInterface
                 public void processHTML(final String html) {
-                    ((Activity) getContext()).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(WebScraper.this, html);
-                        }
-                    });
+                    if (!getActivity().isFinishing())
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onSuccess(WebScraper.this, html);
+                            }
+                        });
                 }
             }, NAME);
             setWebViewClient(new WebViewClient() {
@@ -94,8 +94,8 @@ public class WebScraper extends WebScraperBase {
                                 } catch (InterruptedException exc) {
                                     exc.printStackTrace();
                                 }
-                                if (!isFinished)
-                                    ((Activity) getContext()).runOnUiThread(new Runnable() {
+                                if (!isFinished && !getActivity().isFinishing())
+                                    getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             stop();

@@ -50,6 +50,10 @@ public abstract class WebScraperBase extends WebView {
         this.getSettings().setJavaScriptEnabled(true);
     }
 
+    protected Activity getActivity() {
+        return (Activity) getContext();
+    }
+
     protected interface JavascriptProcessor {
         @JavascriptInterface
         void processHTML(String html);

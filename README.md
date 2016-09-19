@@ -40,5 +40,5 @@ Download
 --------
 
 ```gradle
-compile 'io.github.hendraanggrian:webscraper:0.0.7'
+compile 'io.github.hendraanggrian:webscraper:0.0.8'
 ```
