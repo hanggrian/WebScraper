@@ -3,6 +3,7 @@ package io.github.hendraanggrian.webscraper;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
@@ -65,67 +66,75 @@ public class WebScraper extends WebScraperBase {
 
     @Override
     public void loadUrl(String url) {
-        this.url = url;
         if (!url.equals(PROCESS_URL)) {
+            this.url = url;
             callback.onStarted(this);
-            addJavascriptInterface(new JavascriptProcessor() {
-                @Override
-                @JavascriptInterface
-                public void processHTML(final String html) {
-                    if (!getActivity().isFinishing())
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSuccess(WebScraper.this, html);
-                            }
-                        });
-                }
-            }, NAME);
-            setWebViewClient(new WebViewClient() {
-                @Override
-                public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                    isFinished = false;
-                    if (timeoutListener != null)
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(timeoutListener.getTimeout());
-                                } catch (InterruptedException exc) {
-                                    exc.printStackTrace();
+
+            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivityManager == null || connectivityManager.getActiveNetworkInfo() == null || !connectivityManager.getActiveNetworkInfo().isConnected()) {
+                callback.onNoInternet(this);
+            } else {
+                setWebViewClient(new WebViewClient() {
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        isFinished = false;
+                        if (timeoutListener != null)
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(timeoutListener.getTimeout());
+                                    } catch (InterruptedException exc) {
+                                        exc.printStackTrace();
+                                    }
+                                    if (!isFinished && !getActivity().isFinishing())
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                stop();
+                                                timeoutListener.onTimeout(WebScraper.this);
+                                            }
+                                        });
                                 }
-                                if (!isFinished && !getActivity().isFinishing())
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            stop();
-                                            timeoutListener.onTimeout(WebScraper.this);
-                                        }
-                                    });
-                            }
-                        }).start();
-                }
+                            }).start();
+                    }
 
-                @Override
-                public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
-                    callback.onRequest(WebScraper.this, url);
-                    return super.shouldInterceptRequest(view, url);
-                }
+                    @Override
+                    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+                        callback.onRequest(WebScraper.this, url);
+                        return super.shouldInterceptRequest(view, url);
+                    }
 
-                @Override
-                public void onPageFinished(WebView view, final String url) {
-                    isFinished = true;
-                    view.loadUrl(PROCESS_URL);
-                }
-            });
-            setWebChromeClient(new WebChromeClient() {
-                @Override
-                public void onProgressChanged(WebView view, int newProgress) {
-                    callback.onProgress(WebScraper.this, newProgress);
-                }
-            });
+                    @Override
+                    public void onPageFinished(WebView view, final String url) {
+                        isFinished = true;
+                        view.loadUrl(PROCESS_URL);
+                    }
+                });
+                setWebChromeClient(new WebChromeClient() {
+                    @Override
+                    public void onProgressChanged(WebView view, int newProgress) {
+                        callback.onProgress(WebScraper.this, newProgress);
+                    }
+                });
+                addJavascriptInterface(new JavascriptProcessor() {
+                    @Override
+                    @JavascriptInterface
+                    public void processHTML(final String html) {
+                        if (!getActivity().isFinishing())
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onSuccess(WebScraper.this, html);
+                                }
+                            });
+                    }
+                }, NAME);
+                super.loadUrl(url);
+            }
+        } else {
+            super.loadUrl(url);
         }
-        super.loadUrl(url);
     }
 
     public void stop() {
@@ -161,6 +170,8 @@ public class WebScraper extends WebScraperBase {
         void onRequest(WebScraper scraper, String url);
 
         void onSuccess(WebScraper scraper, String html);
+
+        void onNoInternet(WebScraper scraper);
     }
 
     public static class SimpleCallback implements Callback {
@@ -182,6 +193,11 @@ public class WebScraper extends WebScraperBase {
 
         @Override
         public void onSuccess(WebScraper scraper, String html) {
+
+        }
+
+        @Override
+        public void onNoInternet(WebScraper scraper) {
 
         }
     }

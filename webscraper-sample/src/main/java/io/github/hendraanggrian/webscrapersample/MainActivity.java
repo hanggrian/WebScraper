@@ -73,6 +73,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     }
                 });
             }
+
+            @Override
+            public void onNoInternet(WebScraper scraper) {
+                menu.findItem(R.id.item).setIcon(R.drawable.ic_load);
+                Toast.makeText(MainActivity.this, "No internet!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
