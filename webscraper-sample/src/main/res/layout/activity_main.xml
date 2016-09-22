@@ -26,7 +26,7 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:hint="http://"
-                android:text="http://"/>
+                android:text="http://www.google.com"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 

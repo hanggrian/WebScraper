@@ -33,17 +33,11 @@ new WebScraper(activity)
         }
 
         @Override
-        public void onNoInternet(WebScraper webScraper) {
+        public void onError(WebScraper webScraper) {
 
         }
     })
     .loadUrl("http://www.google.com");
-```
-
-Add several permissions to AndroidManifest.xml
-```xml
-<uses-permission android:name="android.permission.INTERNET" /> 
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
 
 
@@ -51,5 +45,5 @@ Download
 --------
 
 ```gradle
-compile 'io.github.hendraanggrian:webscraper:0.0.9'
+compile 'io.github.hendraanggrian:webscraper:0.1.0'
 ```

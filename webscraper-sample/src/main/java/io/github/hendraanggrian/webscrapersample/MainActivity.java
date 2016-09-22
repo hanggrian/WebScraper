@@ -75,16 +75,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
 
             @Override
-            public void onNoInternet(WebScraper scraper) {
+            public void onError(WebScraper scraper) {
                 menu.findItem(R.id.item).setIcon(R.drawable.ic_load);
-                Toast.makeText(MainActivity.this, "No internet!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Webpage not available!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public void onRefresh() {
-        webScraper.retry();
+        webScraper.stopLoading();
+        webScraper.loadUrl(editText.getText().toString());
     }
 
     @Override
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     if (getCurrentFocus() == editText)
                         ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editText.getWindowToken(), 0);
                 } else {
-                    webScraper.stop();
+                    webScraper.stopLoading();
                     menu.findItem(R.id.item).setIcon(R.drawable.ic_load);
                 }
                 return true;
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 webScraper.timeout(2000, new WebScraper.OnTimeoutListener() {
                     @Override
                     public void onTimeout(WebScraper webScraper) {
-                        webScraper.retry();
+                        webScraper.stopLoading();
                         Toast.makeText(MainActivity.this, "timeout", Toast.LENGTH_SHORT).show();
                     }
                 });
