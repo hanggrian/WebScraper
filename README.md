@@ -1,6 +1,9 @@
+[![license](https://img.shields.io/github/license/hendraanggrian/webscraper)](http://www.apache.org/licenses/LICENSE-2.0)
+
+### This library is no longer maintained.
+
 WebScraper
 ==========
-
 HTML and JavaScript source scraper for Android.
 
 ```java
